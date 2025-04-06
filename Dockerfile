@@ -44,7 +44,7 @@ RUN sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.1"
 WORKDIR /app
 
 # Copy Flutter project files
-COPY . .
+COPY mobile_app/ .
 
 # Define a volume for local development
 VOLUME ["/app"]

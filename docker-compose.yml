@@ -10,7 +10,8 @@ services:
       - /dev/bus/usb:/dev/bus/usb
     environment:
       - DISPLAY=${DISPLAY}
-    command: bash
+    command: flutter run --no-sound-null-safety
+    working_dir: /app/mobile_app
 
 volumes:
   flutter-cache:
