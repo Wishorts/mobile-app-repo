@@ -1,16 +1,39 @@
-# mobile_app
+# Flutter App
 
-A new Flutter project.
+A cross-platform Flutter application for Android and iOS.
 
-## Getting Started
+## Development Setup Requirements
 
-This project is a starting point for a Flutter application.
+To work on this project, you'll need:
 
-A few resources to get you started if this is your first Flutter project:
+1. **Docker**: 
+   - [Installation instructions](https://docs.docker.com/get-docker/)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+2. **Git**:
+   - [Installation instructions](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Setup Instructions
+
+1. Clone the repository:
+https://github.com/Wishorts/mobile-app-repo.git
+
+2. Build the Docker container:
+docker-compose build
+
+3. Start the Docker container:
+docker-compose run flutter
+
+4. Inside the container, you can run Flutter commands:
+flutter pub get
+flutter run
+
+## For iOS Development
+
+For iOS development, team members with macOS will need:
+- XCode installed
+- iOS development certificates
+
+## For Testing on Physical Devices
+
+- Android: Connect your device and enable USB debugging
+- iOS: Connect your device to a Mac with XCode
