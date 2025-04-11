@@ -1,0 +1,17 @@
+version: '3'
+services:
+  flutter:
+    build: .
+    volumes:
+      - .:/app
+      - flutter-cache:/root/.pub-cache
+    network_mode: host
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+    environment:
+      - DISPLAY=${DISPLAY}
+    command: flutter run --no-sound-null-safety
+    working_dir: /app/mobile_app
+
+volumes:
+  flutter-cache:
