@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app/pages/login_page.dart';
+import 'package:mobile_app/pages/splash_screen.dart';
 import 'package:mobile_app/shared/theme/app_theme.dart';
 
 void main() {
@@ -12,9 +12,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Login UI',
+      title: 'Flutter App',
       theme: AppTheme.light,
-      home: const LoginPage(),
+      debugShowCheckedModeBanner: false,
+      home: const SplashScreen(),
     );
   }
 }
