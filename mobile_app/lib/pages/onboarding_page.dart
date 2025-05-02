@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/shared/theme/app_color.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
 import 'login_page.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -26,21 +28,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               });
             },
             children: const [
-              OnboardingPage(
-                title: "Welcome",
-                subtitle: "Your smart app for modern workflows.",
-                image: 'assets/onboarding1.png',
-              ),
-              OnboardingPage(
-                title: "Organize",
-                subtitle: "Manage your tasks efficiently.",
-                image: 'assets/onboarding2.png',
-              ),
-              OnboardingPage(
-                title: "Achieve",
-                subtitle: "Boost productivity with ease.",
-                image: 'assets/onboarding3.png',
-              ),
+              OnboardingPage(title: "Welcome", subtitle: "Your smart app for modern workflows."),
+              OnboardingPage(title: "Organize", subtitle: "Manage your tasks efficiently."),
+              OnboardingPage(title: "Achieve", subtitle: "Boost productivity with ease."),
             ],
           ),
           Positioned(
@@ -51,7 +41,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: SmoothPageIndicator(
                 controller: _controller,
                 count: 3,
-                effect: const WormEffect(dotHeight: 10, dotWidth: 10),
+                effect: const WormEffect(
+                  dotHeight: 10,
+                  dotWidth: 10,
+                  dotColor: AppColors.primary,
+                  activeDotColor: AppColors.background,
+                ),
               ),
             ),
           ),
@@ -62,15 +57,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Text(_isLastPage ? "Get Started" : "Next"),
               onPressed: () {
                 if (_isLastPage) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginPage()),
-                  );
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginPage()));
                 } else {
-                  _controller.nextPage(
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeInOut,
-                  );
+                  _controller.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
                 }
               },
             ),
@@ -84,14 +73,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 class OnboardingPage extends StatelessWidget {
   final String title;
   final String subtitle;
-  final String image;
 
-  const OnboardingPage({
-    super.key,
-    required this.title,
-    required this.subtitle,
-    required this.image,
-  });
+  const OnboardingPage({super.key, required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
@@ -100,15 +83,10 @@ class OnboardingPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(image, height: 250),
           const SizedBox(height: 40),
           Text(title, style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 16),
-          Text(
-            subtitle,
-            style: Theme.of(context).textTheme.bodyLarge,
-            textAlign: TextAlign.center,
-          ),
+          Text(subtitle, style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
         ],
       ),
     );
