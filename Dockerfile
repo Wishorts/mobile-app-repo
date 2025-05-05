@@ -12,12 +12,16 @@ RUN apt-get update && apt-get install -y \
     git \
     unzip \
     xz-utils \
-    zip \
+    zip 
+
+RUN apt-get install -y \
     libglu1-mesa \
     openjdk-11-jdk \
     wget \
     clang \
-    cmake \
+    cmake
+
+RUN apt-get install -y \    
     ninja-build \
     pkg-config \
     libgtk-3-dev
