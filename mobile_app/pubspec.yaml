@@ -28,5 +28,5 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/background.png
-    - assets/background2.png
+    - assets/png/
+    - assets/svg/

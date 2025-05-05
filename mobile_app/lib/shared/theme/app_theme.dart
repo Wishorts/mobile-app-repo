@@ -10,7 +10,7 @@ class AppTheme {
         seedColor: AppColors.primary,
         primary: AppColors.primary,
         secondary: AppColors.background,
-        background: AppColors.scaffoldBackground,
+        surface: AppColors.scaffoldBackground,
         brightness: Brightness.light,
       ),
       appBarTheme: const AppBarTheme(

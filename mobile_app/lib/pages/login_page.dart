@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/shared/theme/app_color.dart';
+import 'package:mobile_app/shared/utils/constants/asset_paths.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -32,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: AppColors.background,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -40,20 +41,27 @@ class _LoginPageState extends State<LoginPage> {
             key: _formKey,
             child: Column(
               children: [
-                const Text(
-                  'Login',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
+                Image.asset(loginVector),
                 const SizedBox(height: 40),
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Email',
-                    prefixIcon: Icon(Icons.email),
+                    prefixIcon: Icon(
+                      Icons.email,
+                      color: AppColors.textOnPrimary,
+                    ),
+                    fillColor: AppColors.inputBackground,
+                    filled: true,
+                    labelStyle: TextStyle(color: AppColors.textOnPrimary),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
@@ -72,10 +80,14 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: !_showPassword,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock),
+                    prefixIcon: const Icon(
+                      Icons.lock,
+                      color: AppColors.textOnPrimary,
+                    ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _showPassword ? Icons.visibility_off : Icons.visibility,
+                        color: AppColors.textOnPrimary,
                       ),
                       onPressed: () {
                         setState(() {
@@ -83,11 +95,23 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                     ),
+                    fillColor: AppColors.inputBackground,
+                    filled: true,
+                    labelStyle: TextStyle(color: AppColors.textOnPrimary),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
-                  validator: (value) =>
-                  value == null || value.length < 6
-                      ? 'Password must be at least 6 characters'
-                      : null,
+                  validator:
+                      (value) =>
+                          value == null || value.length < 6
+                              ? 'Password must be at least 6 characters'
+                              : null,
                 ),
                 const SizedBox(height: 30),
                 SizedBox(

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/pages/onboarding_page.dart';
 import 'package:mobile_app/shared/theme/app_color.dart';
+import 'package:mobile_app/shared/utils/constants/asset_paths.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -25,7 +26,10 @@ class _SplashScreenState extends State<SplashScreen> {
     });
 
     Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const OnboardingScreen()));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+      );
     });
   }
 
@@ -37,7 +41,10 @@ class _SplashScreenState extends State<SplashScreen> {
         fit: StackFit.expand,
         children: [
           // Background image with opacity
-          Opacity(opacity: 0.2, child: Image.asset('assets/background2.png', fit: BoxFit.cover)),
+          Opacity(
+            opacity: 0.2,
+            child: Image.asset(background2, fit: BoxFit.cover),
+          ),
 
           // Centered logo and app name
           Center(
