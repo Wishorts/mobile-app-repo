@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app/pages/splash_screen.dart';
+import 'package:get/get.dart';
+import 'package:mobile_app/getX/auth/auth_controller.dart';
+import 'package:mobile_app/pages/splash/splash_screen.dart';
 import 'package:mobile_app/shared/theme/app_theme.dart';
 
 void main() {
+  //init controllers
+  Get.put<AuthController>(AuthController());
+
   runApp(const MyApp());
 }
 

@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:mobile_app/getX/auth/auth_controller.dart';
 import 'package:mobile_app/shared/theme/app_color.dart';
 import 'package:mobile_app/shared/utils/constants/asset_paths.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _showPassword = false;
+  final AuthController controller = Get.find<AuthController>();
 
   @override
   void dispose() {
@@ -22,11 +25,12 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _handleLogin() {
+  void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       // Handle login logic here
       debugPrint("Email: ${_emailController.text}");
       debugPrint("Password: ${_passwordController.text}");
+      await controller.login(_emailController.text, _passwordController.text);
     }
   }
 

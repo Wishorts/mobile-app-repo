@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mobile_app/pages/onboarding_page.dart';
+import 'package:mobile_app/pages/splash/onboarding_page.dart';
 import 'package:mobile_app/shared/theme/app_color.dart';
 import 'package:mobile_app/shared/utils/constants/asset_paths.dart';
 

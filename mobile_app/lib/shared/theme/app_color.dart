@@ -9,4 +9,7 @@ class AppColors {
   static const Color inputBackground = Color(0xFF455077);
 
   // Add more custom colors as needed
+  static const Color successBackground = Color(0xFFa6d96a);
+  static const Color errorBackground = Color(0xFFF4631E);
+  static const Color warningBackground = Color(0xFFFED16A);
 }
