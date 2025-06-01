@@ -1,18 +1,27 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_app/data/api_response_model.dart';
+import 'package:mobile_app/getX/auth/auth_controller.dart';
 import 'package:path/path.dart';
 
 import 'package:mobile_app/shared/utils/exceptions.dart';
 import 'package:mobile_app/shared/utils/logger.dart';
 
 class HttpClient {
+  final AuthController authController = Get.find<AuthController>();
   String baseUrl = 'http://192.168.0.105:3000/api/v1';
   String authToken = '';
 
+  void getAuthToken() {
+    final String? token = authController.accessToken;
+    authToken = token ?? '';
+  }
+
   // Default headers
   Map<String, String> getHeaders() {
+    getAuthToken();
     return {
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer $authToken',
@@ -106,7 +115,7 @@ class HttpClient {
     Map<String, dynamic> data, {
     Map<String, String>? headers,
   }) async {
-    final url = '$baseUrl/$endpoint';
+    final url = '$baseUrl$endpoint';
     Uri uri = Uri.parse(url);
 
     AppLogger.logInfo("Request URL", url);
