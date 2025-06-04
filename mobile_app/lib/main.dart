@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:mobile_app/getX/auth/auth_controller.dart';
 import 'package:mobile_app/pages/splash/splash_screen.dart';
 import 'package:mobile_app/shared/theme/app_theme.dart';
 
-void main() {
-  //init controllers
-  Get.put<AuthController>(AuthController());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  //load env file
+  await dotenv.load(fileName: '.env');
+
+  // Initialize GetX
+  Get.put<AuthController>(AuthController(), permanent: true);
 
   runApp(const MyApp());
 }

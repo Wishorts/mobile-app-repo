@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_app/components/custom_text_field.dart';
 import 'package:mobile_app/getX/auth/auth_controller.dart';
+import 'package:mobile_app/pages/auth/register_page.dart';
 import 'package:mobile_app/shared/theme/app_color.dart';
 import 'package:mobile_app/shared/utils/constants/asset_paths.dart';
 
@@ -102,11 +103,42 @@ class _LoginPageState extends State<LoginPage> {
                           child: const Text('Login'),
                         ),
                       ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Don't have an account? ",
+                            style: TextStyle(color: AppColors.textOnPrimary),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const RegisterPage(),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'Register',
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
               ),
             ),
+            if (controller.loading.value)
+              const Center(
+                child: CircularProgressIndicator(color: AppColors.primary),
+              ),
           ],
         );
       }),

@@ -1,18 +1,24 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:get/get.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_app/data/api_response_model.dart';
 import 'package:mobile_app/getX/auth/auth_controller.dart';
+import 'package:mobile_app/shared/utils/exceptions.dart';
 import 'package:path/path.dart';
 
-import 'package:mobile_app/shared/utils/exceptions.dart';
 import 'package:mobile_app/shared/utils/logger.dart';
 
 class HttpClient {
-  final AuthController authController = Get.find<AuthController>();
-  String baseUrl = 'http://192.168.0.105:3000/api/v1';
+  final AuthController authController;
+  late final String baseURL;
+  late final String rootURL;
   String authToken = '';
+
+  HttpClient({required this.authController}) {
+    baseURL = dotenv.env["BASE_URL"] ?? '';
+    rootURL = '$baseURL/api/v1';
+  }
 
   void getAuthToken() {
     final String? token = authController.accessToken;
@@ -32,82 +38,117 @@ class HttpClient {
     return {...getHeaders(), if (customHeaders != null) ...customHeaders};
   }
 
+  Future<ApiResponse> _retryOnAuthFailure(
+    Future<ApiResponse> Function() requestFn,
+  ) async {
+    try {
+      return await requestFn(); //first call
+    } on UnauthorizedUserException {
+      final authRefreshed = await authController.getNewAccessToken();
+      if (authRefreshed) {
+        // retry the same request
+        return await requestFn();
+      } else {
+        rethrow; //logout if still fails
+      }
+    }
+  }
+
   Future<ApiResponse> get<T>(
     String endpoint,
     String params, {
     Map<String, dynamic>? body,
     Map<String, String>? headers,
-  }) async {
-    AppLogger.logInfo("Request URL", '$baseUrl/$endpoint?$params');
+  }) {
+    return _retryOnAuthFailure(() async {
+      AppLogger.logInfo("Request URL", '$rootURL$endpoint?$params');
 
-    final response = await http.get(
-      Uri.parse('$baseUrl$endpoint?$params'),
-      headers: mergeHeaders(headers),
-    );
+      final response = await http.get(
+        Uri.parse('$rootURL$endpoint?$params'),
+        headers: mergeHeaders(headers),
+      );
 
-    AppLogger.logInfo("Response JSON", response.body);
+      AppLogger.logInfo("Response JSON", response.body);
 
-    return _handleResponse(response);
+      return _handleResponse(response);
+    });
   }
 
   Future<ApiResponse> post<T>(
     String endpoint,
     dynamic data, {
     Map<String, String>? headers,
-  }) async {
-    AppLogger.logInfo("Request URL", '$baseUrl/$endpoint');
-    AppLogger.logInfo("Request Body", jsonEncode(data));
+    Map<String, String>? cookies,
+  }) {
+    return _retryOnAuthFailure(() async {
+      AppLogger.logInfo("Request URL", '$rootURL$endpoint');
 
-    final response = await http.post(
-      Uri.parse('$baseUrl$endpoint'),
-      body: jsonEncode(data),
-      headers: mergeHeaders(headers),
-    );
-    return _handleResponse(response);
+      final Map<String, String> allHeaders = mergeHeaders(headers);
+
+      if (cookies != null && cookies.isNotEmpty) {
+        final cookieString = cookies.entries
+            .map((e) => '${e.key}=${e.value}')
+            .join('; ');
+        allHeaders['Cookie'] = cookieString;
+      }
+
+      final response = await http.post(
+        Uri.parse('$rootURL$endpoint'),
+        body: jsonEncode(data),
+        headers: allHeaders,
+      );
+
+      return _handleResponse(response);
+    });
   }
 
   Future<ApiResponse> put<T>(
     String endpoint,
     dynamic data, {
     Map<String, String>? headers,
-  }) async {
-    AppLogger.logInfo("Request URL", '$baseUrl/$endpoint');
+  }) {
+    return _retryOnAuthFailure(() async {
+      AppLogger.logInfo("Request URL", '$rootURL$endpoint');
 
-    final response = await http.put(
-      Uri.parse('$baseUrl$endpoint'),
-      body: jsonEncode(data),
-      headers: mergeHeaders(headers),
-    );
-    return _handleResponse(response);
+      final response = await http.put(
+        Uri.parse('$rootURL$endpoint'),
+        body: jsonEncode(data),
+        headers: mergeHeaders(headers),
+      );
+      return _handleResponse(response);
+    });
   }
 
   Future<ApiResponse> patch<T>(
     String endpoint,
     dynamic data, {
     Map<String, String>? headers,
-  }) async {
-    AppLogger.logInfo("Request URL", '$baseUrl/$endpoint');
-    AppLogger.logInfo("Request Body", jsonEncode(data));
+  }) {
+    return _retryOnAuthFailure(() async {
+      AppLogger.logInfo("Request URL", '$rootURL$endpoint');
 
-    final response = await http.patch(
-      Uri.parse('$baseUrl$endpoint'),
-      body: jsonEncode(data),
-      headers: mergeHeaders(headers),
-    );
-    return _handleResponse(response);
+      final response = await http.patch(
+        Uri.parse('$rootURL$endpoint'),
+        body: jsonEncode(data),
+        headers: mergeHeaders(headers),
+      );
+      return _handleResponse(response);
+    });
   }
 
   Future<ApiResponse> delete<T>(
     String endpoint, {
     Map<String, String>? headers,
-  }) async {
-    AppLogger.logInfo("Request URL", '$baseUrl/$endpoint');
+  }) {
+    return _retryOnAuthFailure(() async {
+      AppLogger.logInfo("Request URL", '$rootURL$endpoint');
 
-    final response = await http.delete(
-      Uri.parse('$baseUrl$endpoint'),
-      headers: mergeHeaders(headers),
-    );
-    return _handleResponse(response);
+      final response = await http.delete(
+        Uri.parse('$rootURL$endpoint'),
+        headers: mergeHeaders(headers),
+      );
+      return _handleResponse(response);
+    });
   }
 
   Future<ApiResponse> postWithMultipart<T>(
@@ -115,7 +156,7 @@ class HttpClient {
     Map<String, dynamic> data, {
     Map<String, String>? headers,
   }) async {
-    final url = '$baseUrl$endpoint';
+    final url = '$rootURL$endpoint';
     Uri uri = Uri.parse(url);
 
     AppLogger.logInfo("Request URL", url);
@@ -152,27 +193,37 @@ class HttpClient {
   }
 
   ApiResponse _handleResponse<T>(http.Response response) {
-    AppLogger.logInfo("HttpService Response ${response.statusCode}", "");
+    AppLogger.logInfo(
+      "Response Stats:\n",
+      "HttpService Response ${response.statusCode}\n",
+    );
 
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      final dynamic responseData = json.decode(response.body);
-      return ApiResponse(
-        isSuccess: true,
-        data: responseData,
-        errorMessage: null,
-      );
-    } else if (response.statusCode == 404) {
-      throw NoDataToShowException("No data to show");
-    } else {
-      final dynamic responseData = json.decode(response.body);
-      if (response.statusCode >= 500) {
-        throw InternalErrorException(responseData['message']);
-      } else if (response.statusCode == 401) {
-        throw InvalidCredentialsException(responseData['message']);
-      } else {
-        throw Exception(responseData['message']);
-      }
+    final int statusCode = response.statusCode;
+    final dynamic parsedData = json.decode(response.body);
+    final String defaultError = "Some error occurred! Please try again!";
+    final String? message =
+        parsedData is Map<String, dynamic> ? parsedData['message'] : null;
+
+    if (statusCode >= 200 && statusCode < 300) {
+      return ApiResponse(isSuccess: true, data: parsedData, errorMessage: null);
     }
+
+    if (statusCode == 401) {
+      throw UnauthorizedUserException(
+        message ?? "Access Token Expired or Invalid",
+      );
+    }
+
+    String errorMsg;
+    if (statusCode == 404) {
+      errorMsg = message ?? "Data not found!";
+    } else if (statusCode >= 400) {
+      errorMsg = message ?? "Bad Request! Please try again!";
+    } else {
+      errorMsg = message ?? defaultError;
+    }
+
+    return ApiResponse(isSuccess: false, data: null, errorMessage: errorMsg);
   }
 }
 
@@ -206,7 +257,7 @@ class HttpClient {
   }) async {
     String base = baseUrl.replaceAll('v1', 'v2');
     AppLogger.logInfo("Request URL", '$base/$endpoint');
-    AppLogger.logInfo("Request Body", jsonEncode(data));
+    
 
     final response = await http.post(
       Uri.parse('$base/$endpoint'),
@@ -223,7 +274,7 @@ class HttpClient {
   }) async {
     String base = baseUrl.replaceAll('v1', 'v2');
     AppLogger.logInfo("Request URL", '$base/$endpoint');
-    AppLogger.logInfo("Request Body", jsonEncode(data));
+    
 
     final response = await http.patch(
       Uri.parse('$base/$endpoint'),
@@ -240,7 +291,7 @@ class HttpClient {
   }) async {
     String base = baseUrl.replaceAll('v1', 'v2');
     AppLogger.logInfo("Request URL", '$base/$endpoint');
-    AppLogger.logInfo("Request Body", jsonEncode(data));
+    
 
     final response = await http.put(
       Uri.parse('$base/$endpoint'),

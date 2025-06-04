@@ -6,4 +6,9 @@ class TextStyles {
     color: AppColors.textOnPrimary,
     fontSize: 18,
   );
+
+  static TextStyle appbarStyle = TextStyle(
+    color: AppColors.textPrimary,
+    fontSize: 22,
+  );
 }
