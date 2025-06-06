@@ -205,7 +205,11 @@ class HttpClient {
         parsedData is Map<String, dynamic> ? parsedData['message'] : null;
 
     if (statusCode >= 200 && statusCode < 300) {
-      return ApiResponse(isSuccess: true, data: parsedData, errorMessage: null);
+      return ApiResponse(
+        isSuccess: true,
+        data: parsedData['data'],
+        errorMessage: null,
+      );
     }
 
     if (statusCode == 401) {

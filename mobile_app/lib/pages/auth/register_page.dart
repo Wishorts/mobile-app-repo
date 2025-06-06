@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_app/components/custom_text_field.dart';
+import 'package:mobile_app/components/snackbars.dart';
 import 'package:mobile_app/getX/auth/auth_controller.dart';
+import 'package:mobile_app/pages/auth/components/bottom_text.dart';
+import 'package:mobile_app/pages/auth/login_page.dart';
 import 'package:mobile_app/shared/theme/app_color.dart';
 import 'package:mobile_app/shared/utils/constants/asset_paths.dart';
 
@@ -51,7 +54,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _handleRegister() async {
     if (_formKey.currentState!.validate()) {
-      await controller.register(
+      final bool success = await controller.register(
         firstName: _firstNameController.text,
         lastName: _lastNameController.text,
         email: _emailController.text,
@@ -59,6 +62,10 @@ class _RegisterPageState extends State<RegisterPage> {
         dateOfBirth: _dobController.text,
         password: _passwordController.text,
       );
+      if (success) {
+        Get.offAll(() => LoginPage());
+        snackbar.getSuccessSnackBar("SignUp Successful!");
+      }
     }
   }
 
@@ -219,6 +226,12 @@ class _RegisterPageState extends State<RegisterPage> {
                           onPressed: _handleRegister,
                           child: const Text('Register'),
                         ),
+                      ),
+                      const SizedBox(height: 20),
+                      BottomText(
+                        text: "Already have an Account? ",
+                        buttonText: "Login",
+                        onPress: () => Get.offAll(() => LoginPage()),
                       ),
                     ],
                   ),

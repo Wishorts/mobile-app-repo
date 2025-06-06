@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_app/components/custom_text_field.dart';
+import 'package:mobile_app/components/snackbars.dart';
 import 'package:mobile_app/getX/auth/auth_controller.dart';
 import 'package:mobile_app/pages/auth/register_page.dart';
+import 'package:mobile_app/pages/home/home_screen.dart';
 import 'package:mobile_app/shared/theme/app_color.dart';
 import 'package:mobile_app/shared/utils/constants/asset_paths.dart';
+
+import 'components/bottom_text.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -29,7 +33,14 @@ class _LoginPageState extends State<LoginPage> {
 
   void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      await controller.login(_emailController.text, _passwordController.text);
+      final success = await controller.login(
+        _emailController.text,
+        _passwordController.text,
+      );
+      if (success) {
+        Get.offAll(() => HomeScreen());
+        snackbar.getSuccessSnackBar("Login Successful!");
+      }
     }
   }
 
@@ -104,31 +115,10 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            "Don't have an account? ",
-                            style: TextStyle(color: AppColors.textOnPrimary),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const RegisterPage(),
-                                ),
-                              );
-                            },
-                            child: const Text(
-                              'Register',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
+                      BottomText(
+                        text: "Don't have an Account? ",
+                        buttonText: "Register",
+                        onPress: () => Get.to(() => RegisterPage()),
                       ),
                     ],
                   ),

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:mobile_app/backend/http/http_client.dart';
+import 'package:mobile_app/components/snackbars.dart';
 import 'package:mobile_app/data/api_response_model.dart';
 import 'package:mobile_app/data/user_model.dart';
 import 'package:mobile_app/pages/auth/login_page.dart';
@@ -30,7 +31,7 @@ class AuthController extends GetxController {
   String? get refreshTokenValue =>
       refreshToken.value.isNotEmpty ? refreshToken.value : null;
 
-  Future<void> login(String email, String password) async {
+  Future<bool> login(String email, String password) async {
     loading(true);
     errorMessage.value = '';
 
@@ -42,12 +43,12 @@ class AuthController extends GetxController {
       if (response.isSuccess && response.data != null) {
         errorMessage("");
 
-        final UserModel user = UserModel.fromJson(response.data);
+        String authtoken = response.data['access_token'];
+        String refreshtoken = response.data['refresh_token'];
+
+        final UserModel user = UserModel.fromJson(response.data['user']);
 
         currentUser(user);
-
-        String authtoken = response.data.access_token;
-        String refreshtoken = response.data.refresh_token;
 
         await SharedPreferencesService.saveAuthTokenToPrefs(authtoken);
         await SharedPreferencesService.saveRefreshTokenToPrefs(refreshtoken);
@@ -57,20 +58,29 @@ class AuthController extends GetxController {
 
         loading(false);
         isLoggedIn(true);
+        return true;
       } else {
         isLoggedIn(false);
         loading(false);
         errorMessage(response.errorMessage);
+        snackbar.getErrorSnackBar(
+          response.errorMessage ?? "An error occurred during login",
+        );
+        return false;
       }
     } catch (e) {
       isLoggedIn(false);
       loading(false);
-      AppLogger.logError("Register Error", e.toString());
+      errorMessage("An error occurred during login. Please try again.");
+      snackbar.getErrorSnackBar(
+        "An error occurred during login. Please try again.",
+      );
+      AppLogger.logError("Login Error", e.toString());
+      return false;
     }
-    loading(false);
   }
 
-  Future<void> register({
+  Future<bool> register({
     required String firstName,
     required String lastName,
     required String email,
@@ -99,16 +109,43 @@ class AuthController extends GetxController {
       if (response.isSuccess) {
         errorMessage("");
         loading(false);
-        Get.offAll(
-          () => LoginPage(),
-        ); // Navigate to login page after successful registration
+        snackbar.getSuccessSnackBar("Registration Successful!");
+        return true;
       } else {
         loading(false);
         errorMessage(response.errorMessage);
+        snackbar.getErrorSnackBar(
+          response.errorMessage ?? "An error occurred during registration",
+        );
+        return false;
       }
     } catch (e) {
       loading(false);
+      errorMessage("An error occurred during registration. Please try again.");
+      snackbar.getErrorSnackBar(
+        "An error occurred during registration. Please try again.",
+      );
       AppLogger.logError("Register Error", e.toString());
+      return false;
+    }
+  }
+
+  Future<void> logout() async {
+    loading(true);
+    errorMessage.value = '';
+
+    try {
+      await SharedPreferencesService.clearAllPrefs();
+      dispose();
+      loading(false);
+      Get.offAll(() => LoginPage());
+    } catch (e) {
+      loading(false);
+      errorMessage("An error occurred during logout. Please try again.");
+      snackbar.getErrorSnackBar(
+        "An error occurred during logout. Please try again.",
+      );
+      AppLogger.logError("Logout Error", e.toString());
     }
   }
 
@@ -127,7 +164,17 @@ class AuthController extends GetxController {
         return false;
       }
     } catch (e) {
+      AppLogger.logError("Refresh Token Error", e.toString());
       return false;
     }
+  }
+
+  @override
+  void dispose() {
+    isLoggedIn(false);
+    authToken('');
+    refreshToken('');
+    currentUser(UserModel.empty());
+    super.dispose();
   }
 }

@@ -2,38 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/shared/theme/app_color.dart';
 import 'package:mobile_app/shared/theme/text_styles.dart';
 import 'package:mobile_app/shared/utils/constants/const_values.dart';
+import 'package:mobile_app/shared/utils/global_context.dart';
 
 class DisplaySnackbar {
   late Color snackbarBackground;
-  late BuildContext buildContext;
   late String content;
 
   Color get color => snackbarBackground;
-  BuildContext get context => buildContext;
   String get message => content;
 
-  void getSuccessSnackBar(BuildContext context, String message) {
+  void getSuccessSnackBar(String message) {
     snackbarBackground = AppColors.successBackground;
-    buildContext = context;
     content = message;
     showSnackBar();
   }
 
-  void getErrorSnackBar(BuildContext context, String message) {
+  void getErrorSnackBar(String message) {
     snackbarBackground = AppColors.errorBackground;
-    buildContext = context;
     content = message;
     showSnackBar();
   }
 
-  void getWarningSnackBar(BuildContext context, String message) {
+  void getWarningSnackBar(String message) {
     snackbarBackground = AppColors.warningBackground;
-    buildContext = context;
     content = message;
     showSnackBar();
   }
 
   void showSnackBar() {
+    if (!GlobalContext.hasContext) return;
+
+    final context = GlobalContext.context!;
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
