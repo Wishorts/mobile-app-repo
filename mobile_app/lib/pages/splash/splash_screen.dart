@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mobile_app/pages/onboarding_page.dart';
+import 'package:mobile_app/pages/splash/onboarding_page.dart';
 import 'package:mobile_app/shared/theme/app_color.dart';
+import 'package:mobile_app/shared/utils/constants/asset_paths.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,27 +18,48 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    debugPrint('SplashScreen initState called');
 
     Future.delayed(const Duration(milliseconds: 200), () {
-      setState(() {
-        _visible = true;
-      });
+      if (mounted) {
+        setState(() {
+          _visible = true;
+        });
+        debugPrint('SplashScreen visibility set to true');
+      }
     });
 
     Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const OnboardingScreen()));
+      if (mounted) {
+        debugPrint('Navigating to OnboardingScreen');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+        );
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('Building SplashScreen');
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: Stack(
         fit: StackFit.expand,
         children: [
           // Background image with opacity
-          Opacity(opacity: 0.2, child: Image.asset('assets/background2.png', fit: BoxFit.cover)),
+          Opacity(
+            opacity: 0.2,
+            child: Image.asset(
+              background2,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                debugPrint('Error loading background image: $error');
+                return Container(color: AppColors.primary);
+              },
+            ),
+          ),
 
           // Centered logo and app name
           Center(
