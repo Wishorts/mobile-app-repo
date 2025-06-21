@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:mobile_app/getX/auth/auth_controller.dart';
+import 'package:mobile_app/getX/layout/layout_controller.dart';
+import 'package:mobile_app/pages/layout/layout.dart';
 import 'package:mobile_app/pages/splash/splash_screen.dart';
 import 'package:mobile_app/shared/theme/app_theme.dart';
 import 'package:mobile_app/shared/utils/global_context.dart';
@@ -14,6 +16,7 @@ void main() async {
 
   // Initialize GetX
   Get.put<AuthController>(AuthController(), permanent: true);
+  Get.put<LayoutController>(LayoutController(), permanent: true);
 
   runApp(const MyApp());
 }
@@ -28,7 +31,8 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.light,
       debugShowCheckedModeBanner: false,
       navigatorKey: GlobalContext.navigatorKey,
-      home: const SplashScreen(),
+      defaultTransition: Transition.rightToLeftWithFade,
+      home: AppLayout(),
     );
   }
 }

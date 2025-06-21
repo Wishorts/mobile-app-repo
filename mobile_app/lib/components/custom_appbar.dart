@@ -10,6 +10,9 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
     required this.actions,
     this.appbarColor,
     this.titleColor,
+    this.titleTextStyle,
+    this.centerTitle = false,
+    this.leadingIcon,
   });
 
   final String title;
@@ -17,24 +20,30 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final Color? appbarColor;
   final Color? titleColor;
+  final TextStyle? titleTextStyle;
+  final bool centerTitle;
+  final Icon? leadingIcon;
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: appbarColor,
-
-      centerTitle: false,
+      centerTitle: centerTitle,
       title: Text(
         title,
-        style: TextStyles.appbarStyle.copyWith(color: titleColor),
+        style:
+            titleTextStyle ??
+            TextStyles.appbarStyle.copyWith(color: titleColor),
       ),
       leading: IconButton(
         onPressed: onLeadingAction,
-        icon: Icon(
-          Icons.arrow_back_ios,
-          color: titleColor ?? AppColors.textPrimary,
-          size: 20,
-        ),
+        icon:
+            leadingIcon ??
+            Icon(
+              Icons.arrow_back_ios,
+              color: titleColor ?? AppColors.textPrimary,
+              size: 20,
+            ),
       ),
       actions: actions,
     );
