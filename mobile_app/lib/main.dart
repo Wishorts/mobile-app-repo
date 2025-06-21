@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_app/getX/auth/auth_controller.dart';
 import 'package:mobile_app/getX/layout/layout_controller.dart';
 import 'package:mobile_app/pages/layout/layout.dart';
@@ -28,7 +29,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Flutter App',
-      theme: AppTheme.light,
+      theme: AppTheme.light.copyWith(
+        textTheme: GoogleFonts.interTextTheme(AppTheme.light.textTheme),
+      ),
       debugShowCheckedModeBanner: false,
       navigatorKey: GlobalContext.navigatorKey,
       defaultTransition: Transition.rightToLeftWithFade,

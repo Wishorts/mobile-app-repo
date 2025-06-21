@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_app/shared/theme/app_color.dart';
 
 class AppTheme {
@@ -18,10 +19,12 @@ class AppTheme {
         foregroundColor: AppColors.textOnPrimary,
         elevation: 0,
       ),
-      textTheme: const TextTheme(
-        bodyLarge: TextStyle(color: AppColors.textPrimary),
-        bodyMedium: TextStyle(color: AppColors.textPrimary),
-        labelLarge: TextStyle(fontWeight: FontWeight.bold),
+      textTheme: GoogleFonts.interTextTheme(
+        const TextTheme(
+          bodyLarge: TextStyle(color: AppColors.textPrimary),
+          bodyMedium: TextStyle(color: AppColors.textPrimary),
+          labelLarge: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
